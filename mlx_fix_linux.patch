@@ -1,0 +1,38 @@
+diff --git a/mlx_xpm.c b/mlx_xpm.c
+index c3c0db8..63c89da 100644
+--- a/mlx_xpm.c
++++ b/mlx_xpm.c
+@@ -10,6 +10,7 @@
+ 
+ 
+ #include	"mlx_int.h"
++#include    "bsd/bsd.h"
+ 
+ extern struct s_col_name mlx_col_name[];
+ 
+diff --git a/test/Makefile.gen b/test/Makefile.gen
+index 37b8166..c281248 100644
+--- a/test/Makefile.gen
++++ b/test/Makefile.gen
+@@ -17,7 +17,7 @@ OBJ = $(SRC:.c=.o)
+ all	:$(NAME)
+ 
+ $(NAME)	:$(OBJ)
+-	$(CC) -o $(NAME) $(OBJ) -L.. -lmlx -L$(INCLIB) -lXext -lX11 -lm
++	$(CC) -o $(NAME) $(OBJ) -L.. -lmlx -L$(INCLIB) -lXext -lX11 -lm -L /usr/lib -lbsd
+ 
+ clean	:
+ 	rm -f $(NAME) $(OBJ) *~ core *.core
+diff --git a/test/Makefile.mk b/test/Makefile.mk
+index 53275cc..71b1f57 100644
+--- a/test/Makefile.mk
++++ b/test/Makefile.mk
+@@ -15,7 +15,7 @@ OBJ = $(SRC:.c=.o)
+ all	:$(NAME)
+ 
+ $(NAME)	:$(OBJ)
+-	$(CC) -o $(NAME) $(OBJ) -L.. -lmlx -L$(INCLIB) -lXext -lX11 -lm
++	$(CC) -o $(NAME) $(OBJ) -L.. -lmlx -L$(INCLIB) -lXext -lX11 -lm -L /usr/lib -lbsd
+ 
+ clean	:
+ 	rm -f $(NAME) $(OBJ) *~ core *.core
