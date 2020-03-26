@@ -89,6 +89,7 @@ static int		key_press_hook(int keycode, void *userdata)
 		free(mlx->ptr);
 		exit(EXIT_SUCCESS);
 	}
+	else if (keycode == KEY_P)
 		mlx->flags |= DISPLAY_DOT;
 	return (EXIT_SUCCESS);
 }
