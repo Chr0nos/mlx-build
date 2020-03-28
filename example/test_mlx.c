@@ -19,6 +19,7 @@
 
 #define COLOR_BLACK	0x00000000
 #define COLOR_RED	0x00ff0000
+#define COLOR_WHITE 0x00ffffff
 
 struct				s_image {
 	void			*ptr;
@@ -44,10 +45,36 @@ struct 				s_mlx {
 	unsigned int	flags;
 };
 
+struct				s_box {
+	int				x;
+	int				y;
+	int				w;
+	int				h;
+};
+
 static void		putpx(struct s_image *img,
 	const unsigned int x, const unsigned y, const unsigned int color)
 {
 	img->pixels[x + y * img->width] = color;
+}
+
+/*
+** Setting the same color horizontaly can be significanlty optimized with a
+** PROPER memset (don't write char by char if you use a ft_memset)
+*/
+
+static void		draw_box(struct s_image *img, const struct s_box *box,
+	const unsigned int color)
+{
+	unsigned int	*pixels;
+	int				n;
+
+	n = box->h;
+	while (n--)
+	{
+		pixels = &img->pixels[img->width * (box->y + n) + box->x];
+		memset(pixels, color, box->w * sizeof(unsigned int));
+	}
 }
 
 __attribute_pure__
@@ -91,6 +118,8 @@ static int		key_press_hook(int keycode, void *userdata)
 	}
 	else if (keycode == KEY_P)
 		mlx->flags |= DISPLAY_DOT;
+	if ((keycode >= 'a') && (keycode <= 'z'))
+		mlx->keyboard |= (1u << (keycode - 'a'));
 	return (EXIT_SUCCESS);
 }
 
@@ -100,6 +129,8 @@ static int		key_rlz_hook(int keycode, void *userdata) {
 	mlx = userdata;
 	if (keycode == KEY_P)
 		mlx->flags ^= DISPLAY_DOT;
+	if ((keycode >= 'a') && (keycode <= 'z'))
+		mlx->keyboard &= ~(1u << (keycode - 'a'));
 	return (EXIT_SUCCESS);
 }
 
@@ -119,9 +150,16 @@ static int		create_window(struct s_mlx *mlx, struct s_window *win) {
 
 static int	display(struct s_mlx *mlx)
 {
+	const struct s_box	box = (struct s_box) {42, 42, 42, 42};
+
+	memset(mlx->window.image.pixels, COLOR_BLACK,
+		(unsigned int)(mlx->window.height * mlx->window.image.width) *
+		sizeof(unsigned int));
 	putpx(&mlx->window.image,
 		mlx->window.width >> 1, mlx->window.height >> 1,
 		(mlx->flags & DISPLAY_DOT) ? COLOR_RED : COLOR_BLACK);
+	if (mlx->keyboard)
+		draw_box(&mlx->window.image, &box, COLOR_WHITE);
 	mlx_put_image_to_window(mlx->ptr, mlx->window.ptr,
 		mlx->window.image.ptr, 0, 0);
 	return (EXIT_SUCCESS);
