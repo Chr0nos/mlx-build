@@ -1,56 +1,9 @@
 #include <stdio.h>
 #include <stdlib.h>
 #include <string.h>
+#include "test_mlx.h"
 #include "mlx.h"
 
-#define HOOK_KEY_DOWN	2
-#define HOOk_KEY_UP		3
-#define HOOK_MOUSE_DOWN	4
-#define HOOK_MOUSE_UP	5
-#define HOOK_MOUSE_MOVE	6
-#define HOOK_EXPOSE		12
-#define HOOK_CLOSE		17
-
-#define KEY_ESCAPE		65307
-#define KEY_P			112
-#define KEY_Q			113
-
-#define DISPLAY_DOT		(1u << 0)
-
-#define COLOR_BLACK	0x00000000
-#define COLOR_RED	0x00ff0000
-#define COLOR_WHITE 0x00ffffff
-
-struct				s_image {
-	void			*ptr;
-	unsigned int	width;
-	unsigned int	height;
-	int				bpp;
-	int				endian;
-	unsigned int	*pixels;
-};
-
-struct				s_window {
-	const char		*title;
-	void			*ptr;
-	unsigned int	width;
-	unsigned int	height;
-	struct s_image	image;
-};
-
-struct 				s_mlx {
-	void			*ptr;
-	struct s_window	window;
-	unsigned int	keyboard;
-	unsigned int	flags;
-};
-
-struct				s_box {
-	int				x;
-	int				y;
-	int				w;
-	int				h;
-};
 
 static void		putpx(struct s_image *img,
 	const unsigned int x, const unsigned y, const unsigned int color)
@@ -152,9 +105,6 @@ static int	display(struct s_mlx *mlx)
 {
 	const struct s_box	box = (struct s_box) {42, 42, 42, 42};
 
-	memset(mlx->window.image.pixels, COLOR_BLACK,
-		(unsigned int)(mlx->window.height * mlx->window.image.width) *
-		sizeof(unsigned int));
 	putpx(&mlx->window.image,
 		mlx->window.width >> 1, mlx->window.height >> 1,
 		(mlx->flags & DISPLAY_DOT) ? COLOR_RED : COLOR_BLACK);
@@ -175,12 +125,14 @@ int			main(void)
 		return (1);
 	}
 	mlx.window.title = "Testing mlx window";
-	mlx.window.width = 640;
-	mlx.window.height = 480;
+	mlx.window.width = 1280;
+	mlx.window.height = 720;
 	if (create_window(&mlx, &mlx.window) != EXIT_SUCCESS) {
 		puts("failed to create window");
 		return (2);
 	}
+	mlx_string_put(mlx.ptr, mlx.window.ptr, 10, 10, COLOR_WHITE, "Please wait");
+	mandelbrot(&mlx.window.image, 90);
 	mlx_hook(mlx.window.ptr, HOOK_KEY_DOWN, 1, key_press_hook, &mlx);
 	mlx_hook(mlx.window.ptr, HOOk_KEY_UP, 2, key_rlz_hook, &mlx);
 	mlx_loop_hook(mlx.ptr, &display, &mlx);
