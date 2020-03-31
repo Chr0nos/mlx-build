@@ -14,6 +14,7 @@
 # define KEY_Q			    113
 
 # define DISPLAY_DOT		(1u << 0)
+# define RENDER             (1u << 1)
 
 # define COLOR_BLACK	    0x00000000
 # define COLOR_RED	        0x00ff0000

@@ -89,7 +89,7 @@ static unsigned int *create_color_map(unsigned int size)
     unsigned int    i;
     const float     size_f = (float)size;
 
-    map = malloc(sizeof(unsigned int) * size);
+    map = malloc(sizeof(unsigned int) * (size + 1));
     if (!map)
         return (NULL);
     i = 0;
@@ -98,6 +98,7 @@ static unsigned int *create_color_map(unsigned int size)
         map[i] = color_lerp(0x2070ff, COLOR_BLACK, (1.0 - (float)i / size_f));
         i++;
     }
+    map[size] = COLOR_BLACK;
     return (map);
 }
 

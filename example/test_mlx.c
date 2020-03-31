@@ -61,8 +61,10 @@ static int		create_image(struct s_mlx *mlx,
 static int		key_press_hook(int keycode, void *userdata)
 {
 	struct s_mlx	*mlx;
+	unsigned int	old_kbd;
 
 	mlx = userdata;
+	old_kbd = mlx->keyboard;
 	if ((keycode == KEY_ESCAPE) || (keycode == KEY_Q)) {
 		mlx_destroy_image(mlx->ptr, mlx->window.image.ptr);
 		mlx_destroy_window(mlx->ptr, mlx->window.ptr);
@@ -70,25 +72,35 @@ static int		key_press_hook(int keycode, void *userdata)
 		exit(EXIT_SUCCESS);
 	}
 	else if (keycode == KEY_P)
-		mlx->flags |= DISPLAY_DOT;
+		mlx->flags |= (DISPLAY_DOT | RENDER);
 	if ((keycode >= 'a') && (keycode <= 'z'))
-		mlx->keyboard |= (1u << (keycode - 'a'));
+		mlx->keyboard |= (1u << (keycode - 'a'));\
+	if (mlx->keyboard != old_kbd)
+		mlx->flags |= RENDER;
 	return (EXIT_SUCCESS);
 }
 
-static int		key_rlz_hook(int keycode, void *userdata) {
+static int		key_rlz_hook(int keycode, void *userdata)
+{
 	struct s_mlx	*mlx;
+	unsigned int	old_kbd;
 
 	mlx = userdata;
-	if (keycode == KEY_P)
+	old_kbd = mlx->keyboard;
+	if (keycode == KEY_P) {
 		mlx->flags ^= DISPLAY_DOT;
+		mlx->flags |= RENDER;
+	}
 	if ((keycode >= 'a') && (keycode <= 'z'))
 		mlx->keyboard &= ~(1u << (keycode - 'a'));
+	if (mlx->keyboard != old_kbd)
+		mlx->flags |= RENDER;
 	return (EXIT_SUCCESS);
 }
 
 __attribute_pure__
-static int		create_window(struct s_mlx *mlx, struct s_window *win) {
+static int		create_window(struct s_mlx *mlx, struct s_window *win)
+{
 	win->ptr = mlx_new_window(mlx->ptr, win->width, win->height,
 		(void*)(size_t)win->title);
 	if (!win->ptr)
@@ -105,13 +117,16 @@ static int	display(struct s_mlx *mlx)
 {
 	const struct s_box	box = (struct s_box) {42, 42, 42, 42};
 
-	putpx(&mlx->window.image,
-		mlx->window.width >> 1, mlx->window.height >> 1,
-		(mlx->flags & DISPLAY_DOT) ? COLOR_RED : COLOR_BLACK);
-	if (mlx->keyboard)
-		draw_box(&mlx->window.image, &box, COLOR_WHITE);
-	mlx_put_image_to_window(mlx->ptr, mlx->window.ptr,
-		mlx->window.image.ptr, 0, 0);
+	if (mlx->flags & RENDER) {
+		draw_box(&mlx->window.image, &box,
+			(mlx->keyboard) ? COLOR_WHITE : COLOR_BLACK);
+		putpx(&mlx->window.image,
+			mlx->window.width >> 1, mlx->window.height >> 1,
+			(mlx->flags & DISPLAY_DOT) ? COLOR_RED : COLOR_BLACK);
+		mlx_put_image_to_window(mlx->ptr, mlx->window.ptr,
+			mlx->window.image.ptr, 0, 0);
+		mlx->flags &= ~RENDER;
+	}
 	return (EXIT_SUCCESS);
 }
 
@@ -127,6 +142,7 @@ int			main(void)
 	mlx.window.title = "Testing mlx window";
 	mlx.window.width = 1280;
 	mlx.window.height = 720;
+	mlx.flags = RENDER;
 	if (create_window(&mlx, &mlx.window) != EXIT_SUCCESS) {
 		puts("failed to create window");
 		return (2);
