@@ -3,6 +3,7 @@
 #include <string.h>
 #include "test_mlx.h"
 #include "mlx.h"
+#include "mlx_terminate.h"
 
 
 static void		putpx(struct s_image *img,
@@ -68,7 +69,7 @@ static int		key_press_hook(int keycode, void *userdata)
 	if ((keycode == KEY_ESCAPE) || (keycode == KEY_Q)) {
 		mlx_destroy_image(mlx->ptr, mlx->window.image.ptr);
 		mlx_destroy_window(mlx->ptr, mlx->window.ptr);
-		free(mlx->ptr);
+		mlx_terminate(mlx->ptr);
 		exit(EXIT_SUCCESS);
 	}
 	else if (keycode == KEY_P)
