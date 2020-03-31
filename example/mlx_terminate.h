@@ -1,6 +1,18 @@
+/* ************************************************************************** */
+/*                                                                            */
+/*                                                        :::      ::::::::   */
+/*   mlx_terminate.h                                    :+:      :+:    :+:   */
+/*                                                    +:+ +:+         +:+     */
+/*   By: snicolet <marvin@42.fr>                    +#+  +:+       +#+        */
+/*                                                +#+#+#+#+#+   +#+           */
+/*   Created: 2020/03/31 13:33:47 by snicolet          #+#    #+#             */
+/*   Updated: 2020/03/31 13:35:13 by snicolet         ###   ########.fr       */
+/*                                                                            */
+/* ************************************************************************** */
+
 #ifndef MLX_TERMINATE_H
 # define MLX_TERMINATE_H
 
-void    mlx_terminate(void *mlxptr);
+void	mlx_terminate(void *mlxptr);
 
 #endif

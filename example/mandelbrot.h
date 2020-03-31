@@ -1,26 +1,26 @@
 /* ************************************************************************** */
 /*                                                                            */
 /*                                                        :::      ::::::::   */
-/*   mlx_terminate.c                                    :+:      :+:    :+:   */
+/*   mandelbrot.h                                       :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
 /*   By: snicolet <marvin@42.fr>                    +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
-/*   Created: 2020/03/31 13:33:37 by snicolet          #+#    #+#             */
-/*   Updated: 2020/03/31 13:34:44 by snicolet         ###   ########.fr       */
+/*   Created: 2020/03/31 13:27:36 by snicolet          #+#    #+#             */
+/*   Updated: 2020/03/31 13:40:48 by snicolet         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
-#include <X11/Xlib.h>
-#include <unistd.h>
-#include "mlx_int.h"
+#ifndef MANDELBROT_H
+# define MANDELBROT_H
 
-void	mlx_terminate(void *mlxptr)
-{
-	struct s_xvar	*xvar;
+struct				s_mandel {
+	struct s_image	*img;
+	unsigned int	max_iterations;
+	float			zoom_x;
+	float			zoom_y;
+	unsigned int	*color_map;
+};
 
-	xvar = mlxptr;
-	if (xvar->private_cmap)
-		XFreeColormap(xvar->display, xvar->private_cmap);
-	XCloseDisplay(xvar->display);
-	free(xvar);
-}
+void				mandelbrot(struct s_image *img, unsigned int iterations);
+
+#endif

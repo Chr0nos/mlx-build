@@ -1,9 +1,23 @@
+/* ************************************************************************** */
+/*                                                                            */
+/*                                                        :::      ::::::::   */
+/*   test_mlx.c                                         :+:      :+:    :+:   */
+/*                                                    +:+ +:+         +:+     */
+/*   By: snicolet <marvin@42.fr>                    +#+  +:+       +#+        */
+/*                                                +#+#+#+#+#+   +#+           */
+/*   Created: 2020/03/31 13:36:43 by snicolet          #+#    #+#             */
+/*   Updated: 2020/03/31 13:39:17 by snicolet         ###   ########.fr       */
+/*                                                                            */
+/* ************************************************************************** */
+
 #include <stdio.h>
 #include <stdlib.h>
 #include <string.h>
-#include "test_mlx.h"
+
 #include "mlx.h"
+#include "test_mlx.h"
 #include "mlx_terminate.h"
+#include "mandelbrot.h"
 
 
 static void		putpx(struct s_image *img,
@@ -151,7 +165,7 @@ int			main(void)
 	mlx_string_put(mlx.ptr, mlx.window.ptr, 10, 10, COLOR_WHITE, "Please wait");
 	mandelbrot(&mlx.window.image, 90);
 	mlx_hook(mlx.window.ptr, HOOK_KEY_DOWN, 1, key_press_hook, &mlx);
-	mlx_hook(mlx.window.ptr, HOOk_KEY_UP, 2, key_rlz_hook, &mlx);
+	mlx_hook(mlx.window.ptr, HOOK_KEY_UP, 2, key_rlz_hook, &mlx);
 	mlx_loop_hook(mlx.ptr, &display, &mlx);
 	mlx_loop(mlx.ptr);
 	return (EXIT_SUCCESS);
