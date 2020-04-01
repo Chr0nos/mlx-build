@@ -6,7 +6,7 @@
 /*   By: snicolet <marvin@42.fr>                    +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2020/03/31 13:23:35 by snicolet          #+#    #+#             */
-/*   Updated: 2020/04/01 18:23:15 by snicolet         ###   ########.fr       */
+/*   Updated: 2020/04/01 18:37:50 by snicolet         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -100,7 +100,7 @@ static unsigned int		*create_color_map(unsigned int size)
 	i = 0;
 	while (i < size)
 	{
-		map[i] = color_lerp(0x00bfff, COLOR_BLACK, (1.0 - (float)i / size_f));
+		map[i] = color_lerp(0x00bfff, 0x101015, (1.0 - (float)i / size_f));
 		i++;
 	}
 	map[size] = COLOR_BLACK;
