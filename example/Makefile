@@ -1,7 +1,7 @@
 NAME=a.out
 LINKER=-lXext -lX11 -lmlx -lm
 CC=clang
-CFLAGS=-Wall -Werror -Wextra -O2
+CFLAGS=-Wall -Werror -Wextra -O2 -Weverything -Wno-padded
 
 all: $(NAME)
 

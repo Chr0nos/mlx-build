@@ -6,7 +6,7 @@
 /*   By: snicolet <marvin@42.fr>                    +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2020/03/31 13:37:33 by snicolet          #+#    #+#             */
-/*   Updated: 2020/03/31 13:39:04 by snicolet         ###   ########.fr       */
+/*   Updated: 2020/04/04 01:15:06 by snicolet         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -57,10 +57,10 @@ struct				s_mlx {
 };
 
 struct				s_box {
-	int				x;
-	int				y;
-	int				w;
-	int				h;
+	unsigned int	x;
+	unsigned int	y;
+	unsigned int	w;
+	unsigned int	h;
 };
 
 #endif

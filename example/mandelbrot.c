@@ -6,7 +6,7 @@
 /*   By: snicolet <marvin@42.fr>                    +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2020/03/31 13:23:35 by snicolet          #+#    #+#             */
-/*   Updated: 2020/04/01 18:37:50 by snicolet         ###   ########.fr       */
+/*   Updated: 2020/04/04 01:20:55 by snicolet         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -23,12 +23,12 @@
 #define CR            4
 #define CI            5
 
-#define X1            -2.1
-#define X2            0.6
-#define Y1            -1.2
-#define Y2            1.2
+#define X1            -2.1f
+#define X2            0.6f
+#define Y1            -1.2f
+#define Y2            1.2f
 
-unsigned int			color_lerp(unsigned int start, unsigned int end,
+static unsigned int		color_lerp(unsigned int start, unsigned int end,
 	float pc)
 {
 	float				r;
@@ -48,11 +48,11 @@ unsigned int			color_lerp(unsigned int start, unsigned int end,
 }
 
 static void				image_fill(struct s_image *img,
-	void (*func)(int, int, void *),
+	void (*func)(unsigned int, unsigned int, void *),
 	void *userdata)
 {
-	int					x;
-	int					y;
+	unsigned int		x;
+	unsigned int		y;
 
 	x = img->width;
 	while (x--)
@@ -63,7 +63,8 @@ static void				image_fill(struct s_image *img,
 	}
 }
 
-static void				draw_mandelpix(const int x, const int y, void *userdata)
+static void				draw_mandelpix(const unsigned int x,
+	const unsigned int y, void *userdata)
 {
 	struct s_mandel		*mandel;
 	unsigned int		i;
@@ -77,8 +78,8 @@ static void				draw_mandelpix(const int x, const int y, void *userdata)
 	i = 0;
 	while (i < mandel->max_iterations)
 	{
-		z[RE2] = pow(z[RE], 2);
-		z[IM2] = pow(z[IM], 2);
+		z[RE2] = powf(z[RE], 2);
+		z[IM2] = powf(z[IM], 2);
 		if (z[RE2] + z[IM2] > 4)
 			break ;
 		z[IM] = 2 * z[IM] * z[RE] + z[CI];
@@ -100,7 +101,7 @@ static unsigned int		*create_color_map(unsigned int size)
 	i = 0;
 	while (i < size)
 	{
-		map[i] = color_lerp(0x00bfff, 0x101015, (1.0 - (float)i / size_f));
+		map[i] = color_lerp(0x00bfff, 0x101015, (1.0f - (float)i / size_f));
 		i++;
 	}
 	map[size] = COLOR_BLACK;

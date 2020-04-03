@@ -6,7 +6,7 @@
 /*   By: snicolet <marvin@42.fr>                    +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2020/03/31 13:36:43 by snicolet          #+#    #+#             */
-/*   Updated: 2020/03/31 13:39:17 by snicolet         ###   ########.fr       */
+/*   Updated: 2020/04/04 01:17:05 by snicolet         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -35,26 +35,26 @@ static void		draw_box(struct s_image *img, const struct s_box *box,
 	const unsigned int color)
 {
 	unsigned int	*pixels;
-	int				n;
+	unsigned int	n;
 
-	n = box->h;
+	n = (unsigned int)box->h;
 	while (n--)
 	{
 		pixels = &img->pixels[img->width * (box->y + n) + box->x];
-		memset(pixels, color, box->w * sizeof(unsigned int));
+		memset(pixels, (int)color, box->w * sizeof(unsigned int));
 	}
 }
 
 __attribute_pure__
 static int		create_image(struct s_mlx *mlx,
-	int w, int h, struct s_image *img)
+	const unsigned int w, const unsigned int h, struct s_image *img)
 {
 	int		line_size;
 
-	if ((w < 0) || (h < 0))
+	if ((!w) || (!h))
 		return (EXIT_FAILURE);
 	*img = (struct s_image) {
-		.ptr = mlx_new_image(mlx->ptr, w, h),
+		.ptr = mlx_new_image(mlx->ptr, (int)w, (int)h),
 		.width = w,
 		.height = h,
 		.bpp = 0,
@@ -63,13 +63,12 @@ static int		create_image(struct s_mlx *mlx,
 	};
 	if (!img->ptr)
 		return (EXIT_FAILURE);
-	img->pixels = (void*)(size_t)mlx_get_data_addr(
+	img->pixels = (void*)mlx_get_data_addr(
 		img->ptr, &img->bpp, &line_size, &img->endian);
 	if (!img->pixels) {
 		mlx_destroy_image(mlx->ptr, img->ptr);
 		return (EXIT_FAILURE);
 	}
-	bzero(img->pixels, (img->bpp >> 3) * (img->width * img->height));
 	return (EXIT_SUCCESS);
 }
 
@@ -116,7 +115,7 @@ static int		key_rlz_hook(int keycode, void *userdata)
 __attribute_pure__
 static int		create_window(struct s_mlx *mlx, struct s_window *win)
 {
-	win->ptr = mlx_new_window(mlx->ptr, win->width, win->height,
+	win->ptr = mlx_new_window(mlx->ptr, (int)win->width, (int)win->height,
 		(void*)(size_t)win->title);
 	if (!win->ptr)
 		return (EXIT_FAILURE);
