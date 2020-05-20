@@ -6,7 +6,7 @@
 /*   By: snicolet <marvin@42.fr>                    +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2020/03/31 13:36:43 by snicolet          #+#    #+#             */
-/*   Updated: 2020/04/04 01:17:05 by snicolet         ###   ########.fr       */
+/*   Updated: 2020/05/20 22:10:45 by snicolet         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -18,32 +18,6 @@
 #include "test_mlx.h"
 #include "mlx_terminate.h"
 #include "mandelbrot.h"
-
-
-static void		putpx(struct s_image *img,
-	const unsigned int x, const unsigned y, const unsigned int color)
-{
-	img->pixels[x + y * img->width] = color;
-}
-
-/*
-** Setting the same color horizontaly can be significanlty optimized with a
-** PROPER memset (don't write char by char if you use a ft_memset)
-*/
-
-static void		draw_box(struct s_image *img, const struct s_box *box,
-	const unsigned int color)
-{
-	unsigned int	*pixels;
-	unsigned int	n;
-
-	n = (unsigned int)box->h;
-	while (n--)
-	{
-		pixels = &img->pixels[img->width * (box->y + n) + box->x];
-		memset(pixels, (int)color, box->w * sizeof(unsigned int));
-	}
-}
 
 __attribute_pure__
 static int		create_image(struct s_mlx *mlx,
@@ -129,14 +103,7 @@ static int		create_window(struct s_mlx *mlx, struct s_window *win)
 
 static int	display(struct s_mlx *mlx)
 {
-	const struct s_box	box = (struct s_box) {42, 42, 42, 42};
-
 	if (mlx->flags & RENDER) {
-		draw_box(&mlx->window.image, &box,
-			(mlx->keyboard) ? COLOR_WHITE : COLOR_BLACK);
-		putpx(&mlx->window.image,
-			mlx->window.width >> 1, mlx->window.height >> 1,
-			(mlx->flags & DISPLAY_DOT) ? COLOR_RED : COLOR_BLACK);
 		mlx_put_image_to_window(mlx->ptr, mlx->window.ptr,
 			mlx->window.image.ptr, 0, 0);
 		mlx->flags &= ~RENDER;
@@ -144,22 +111,26 @@ static int	display(struct s_mlx *mlx)
 	return (EXIT_SUCCESS);
 }
 
-int			main(void)
+int			main(int ac, char **av)
 {
 	struct s_mlx	mlx;
 
 	bzero(&mlx, sizeof(mlx));
 	if (!(mlx.ptr = mlx_init())) {
 		puts("failed to init mlx");
-		return (1);
+		return (EXIT_FAILURE);
 	}
 	mlx.window.title = "Testing mlx window";
-	mlx.window.width = 1280;
-	mlx.window.height = 720;
+	mlx.window.width = 1910;
+	mlx.window.height = 1000;
 	mlx.flags = RENDER;
+	if (ac > 1)
+		sscanf(av[1], "%5ux%5u", &mlx.window.width, &mlx.window.height);
+	if ((!mlx.window.height) || (!mlx.window.width))
+		return (EXIT_FAILURE);
 	if (create_window(&mlx, &mlx.window) != EXIT_SUCCESS) {
 		puts("failed to create window");
-		return (2);
+		return (EXIT_FAILURE);
 	}
 	mlx_string_put(mlx.ptr, mlx.window.ptr, 10, 10, COLOR_WHITE, "Please wait");
 	mandelbrot(&mlx.window.image, 90);

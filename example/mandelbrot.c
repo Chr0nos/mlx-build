@@ -6,7 +6,7 @@
 /*   By: snicolet <marvin@42.fr>                    +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2020/03/31 13:23:35 by snicolet          #+#    #+#             */
-/*   Updated: 2020/04/04 01:20:55 by snicolet         ###   ########.fr       */
+/*   Updated: 2020/05/20 22:10:09 by snicolet         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -45,22 +45,6 @@ static unsigned int		color_lerp(unsigned int start, unsigned int end,
 	return ((((unsigned int)r) & 0xff0000) |
 		(((unsigned int)g) & 0x00ff00) |
 		(((unsigned int)b) & 0x0000ff));
-}
-
-static void				image_fill(struct s_image *img,
-	void (*func)(unsigned int, unsigned int, void *),
-	void *userdata)
-{
-	unsigned int		x;
-	unsigned int		y;
-
-	x = img->width;
-	while (x--)
-	{
-		y = img->height;
-		while (y--)
-			func(x, y, userdata);
-	}
 }
 
 static void				draw_mandelpix(const unsigned int x,
@@ -115,12 +99,12 @@ void					mandelbrot(struct s_image *img, unsigned int iterations)
 	mandel = (struct s_mandel) {
 		.img = img,
 		.max_iterations = iterations,
-		.zoom_x = img->width / (X2 - X1),
-		.zoom_y = img->height / (Y2 - Y1),
+		.zoom_x = (float)img->width / (X2 - X1),
+		.zoom_y = (float)img->height / (Y2 - Y1),
 		.color_map = create_color_map(iterations)
 	};
 	if (!mandel.color_map)
 		return ;
-	image_fill(img, draw_mandelpix, &mandel);
+	image_fill_threaded(img, draw_mandelpix, &mandel, 8);
 	free(mandel.color_map);
 }
