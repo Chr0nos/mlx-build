@@ -1,12 +1,20 @@
 NAME=a.out
-LINKER=-lXext -lX11 -lmlx -lm -lpthread
+LINKER=-lXext -lX11 -lmlx -lpthread
 CC=clang
 CFLAGS=-Wall -Werror -Wextra -Weverything -Wno-padded -O2
+OBJS=test_mlx.o mandelbrot.o mlx_terminate.o fill_image.o
+
 
 all: $(NAME)
 
-$(NAME):
-	$(CC) test_mlx.c mandelbrot.c mlx_terminate.c fill_image.c -o $(NAME) $(CFLAGS) $(LINKER)
+%.o: %.c
+	$(CC) -c $< $(CFLAGS) -o $@
+
+$(NAME): $(OBJS)
+	$(CC) $(OBJS) -o $(NAME) $(CFLAGS) $(LINKER)
+
+clean:
+	$(RM) $(OBJS)
 
 fclean:
 	$(RM) $(NAME)

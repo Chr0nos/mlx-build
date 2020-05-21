@@ -6,13 +6,14 @@
 /*   By: snicolet <marvin@42.fr>                    +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2020/03/31 13:36:43 by snicolet          #+#    #+#             */
-/*   Updated: 2020/05/20 22:10:45 by snicolet         ###   ########.fr       */
+/*   Updated: 2020/05/21 02:33:50 by snicolet         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
 #include <stdio.h>
 #include <stdlib.h>
 #include <string.h>
+#include <unistd.h>
 
 #include "mlx.h"
 #include "test_mlx.h"
@@ -103,11 +104,14 @@ static int		create_window(struct s_mlx *mlx, struct s_window *win)
 
 static int	display(struct s_mlx *mlx)
 {
-	if (mlx->flags & RENDER) {
+	if (mlx->flags & RENDER)
+	{
+		puts("pushing image to window.");
 		mlx_put_image_to_window(mlx->ptr, mlx->window.ptr,
 			mlx->window.image.ptr, 0, 0);
 		mlx->flags &= ~RENDER;
 	}
+	usleep(60);
 	return (EXIT_SUCCESS);
 }
 
