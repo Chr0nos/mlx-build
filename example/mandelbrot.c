@@ -6,7 +6,7 @@
 /*   By: snicolet <marvin@42.fr>                    +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2020/03/31 13:23:35 by snicolet          #+#    #+#             */
-/*   Updated: 2020/05/21 02:31:19 by snicolet         ###   ########.fr       */
+/*   Updated: 2020/05/21 02:40:06 by snicolet         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -92,7 +92,6 @@ static unsigned int		*create_color_map(unsigned int size)
 	map[size] = COLOR_BLACK;
 	return (map);
 }
-
 
 void					zoom(struct s_mandel *mandel,
 	const unsigned int x, const unsigned int y, const t_fract zoom)
