@@ -6,7 +6,7 @@
 /*   By: snicolet <marvin@42.fr>                    +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2020/03/31 13:37:33 by snicolet          #+#    #+#             */
-/*   Updated: 2020/05/18 02:44:48 by snicolet         ###   ########.fr       */
+/*   Updated: 2020/05/21 03:34:05 by snicolet         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -25,8 +25,7 @@
 # define KEY_P		    	112
 # define KEY_Q			    113
 
-# define DISPLAY_DOT		1u
-# define RENDER             2u
+# define RENDER             1u
 
 # define COLOR_BLACK	    0x00000000
 # define COLOR_RED	        0x00ff0000
@@ -54,13 +53,6 @@ struct				s_mlx {
 	struct s_window	window;
 	unsigned int	keyboard;
 	unsigned int	flags;
-};
-
-struct				s_box {
-	unsigned int	x;
-	unsigned int	y;
-	unsigned int	w;
-	unsigned int	h;
 };
 
 int					image_fill_threaded(

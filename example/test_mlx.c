@@ -6,7 +6,7 @@
 /*   By: snicolet <marvin@42.fr>                    +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2020/03/31 13:36:43 by snicolet          #+#    #+#             */
-/*   Updated: 2020/05/21 02:33:50 by snicolet         ###   ########.fr       */
+/*   Updated: 2020/05/21 11:49:58 by snicolet         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -61,9 +61,7 @@ static int		key_press_hook(int keycode, void *userdata)
 		exit(EXIT_SUCCESS);
 	}
 	else if (keycode == KEY_P)
-		mlx->flags |= (DISPLAY_DOT | RENDER);
-	if ((keycode >= 'a') && (keycode <= 'z'))
-		mlx->keyboard |= (1u << (keycode - 'a'));\
+		mlx->flags |= RENDER;
 	if (mlx->keyboard != old_kbd)
 		mlx->flags |= RENDER;
 	return (EXIT_SUCCESS);
@@ -77,11 +75,8 @@ static int		key_rlz_hook(int keycode, void *userdata)
 	mlx = userdata;
 	old_kbd = mlx->keyboard;
 	if (keycode == KEY_P) {
-		mlx->flags ^= DISPLAY_DOT;
 		mlx->flags |= RENDER;
 	}
-	if ((keycode >= 'a') && (keycode <= 'z'))
-		mlx->keyboard &= ~(1u << (keycode - 'a'));
 	if (mlx->keyboard != old_kbd)
 		mlx->flags |= RENDER;
 	return (EXIT_SUCCESS);
