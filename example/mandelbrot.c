@@ -10,7 +10,6 @@
 /*                                                                            */
 /* ************************************************************************** */
 
-#include "test_mlx.h"
 #include <stdlib.h>
 #include <unistd.h>
 #include "mandelbrot.h"

@@ -12,6 +12,7 @@
 
 #ifndef MANDELBROT_H
 # define MANDELBROT_H
+# include "test_mlx.h"
 
 typedef float		t_fract;
 
