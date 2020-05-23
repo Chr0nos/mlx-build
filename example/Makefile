@@ -1,8 +1,8 @@
 NAME=a.out
-LINKER=-lXext -lX11 -lmlx -lpthread
+LINKER=-L. -lXext -lX11 -lmlx -lpthread
 CC=clang
 CFLAGS=-Wall -Werror -Wextra -Weverything -Wno-padded -O2 -Wno-strict-prototypes
-OBJS=test_mlx.o mandelbrot.o mlx_terminate.o fill_image.o
+OBJS=test_mlx.o mandelbrot.o mlx_terminate.o fill_image.o color_map.o
 
 
 all: $(NAME)

@@ -31,6 +31,8 @@ struct				s_mandel {
 	t_fract			offset_y;
 };
 
+struct s_mandel		mandelbrot_init(struct s_image *img,
+	unsigned int iterations);
 void				mandelbrot(struct s_image *img, unsigned int iterations);
 void				zoom(struct s_mandel *mandel,
 	const unsigned int x, const unsigned int y, const t_fract zoom);

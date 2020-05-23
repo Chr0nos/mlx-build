@@ -6,12 +6,13 @@
 /*   By: snicolet <marvin@42.fr>                    +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2020/03/31 13:23:35 by snicolet          #+#    #+#             */
-/*   Updated: 2020/05/21 02:31:19 by snicolet         ###   ########.fr       */
+/*   Updated: 2020/05/21 03:26:53 by snicolet         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
 #include <stdlib.h>
 #include <unistd.h>
+#include "color_map.h"
 #include "mandelbrot.h"
 
 #define RE            0
@@ -26,24 +27,6 @@
 #define Y1            -1.2f
 #define Y2            1.2f
 
-static unsigned int		color_lerp(unsigned int start, unsigned int end,
-	float pc)
-{
-	float				r;
-	float				g;
-	float				b;
-
-	if (pc <= 0.0f)
-		return (start);
-	else if (pc >= 1.0f)
-		return (end);
-	r = (float)(start & 0xff0000) * (1.0f - pc) + (float)(end & 0xff0000) * pc;
-	g = (float)(start & 0x00ff00) * (1.0f - pc) + (float)(end & 0x00ff00) * pc;
-	b = (float)(start & 0x0000ff) * (1.0f - pc) + (float)(end & 0x0000ff) * pc;
-	return ((((unsigned int)r) & 0xff0000) |
-		(((unsigned int)g) & 0x00ff00) |
-		(((unsigned int)b) & 0x0000ff));
-}
 
 static void				draw_mandelpix(const unsigned int x,
 	const unsigned int y, void *userdata)
@@ -73,26 +56,6 @@ static void				draw_mandelpix(const unsigned int x,
 	mandel->img->pixels[x + y * mandel->img->width] = mandel->color_map[i];
 }
 
-static unsigned int		*create_color_map(unsigned int size)
-{
-	unsigned int		*map;
-	unsigned int		i;
-	const float			size_f = (float)size;
-
-	map = malloc(sizeof(unsigned int) * (size + 1));
-	if (!map)
-		return (NULL);
-	i = 0;
-	while (i < size)
-	{
-		map[i] = color_lerp(0x00bfff, 0x101015, (1.0f - (float)i / size_f));
-		i++;
-	}
-	map[size] = COLOR_BLACK;
-	return (map);
-}
-
-
 void					zoom(struct s_mandel *mandel,
 	const unsigned int x, const unsigned int y, const t_fract zoom)
 {
@@ -102,20 +65,19 @@ void					zoom(struct s_mandel *mandel,
 	const t_fract	nh = (mandel->y2 - mandel->y1) * (mandel->zoom * zoom);
 
 	mandel->zoom *= zoom;
-	mandel->offset_x -= ((t_fract)x / mandel->img->width) * (nw - w);
-	mandel->offset_y -= ((t_fract)y / mandel->img->height) * (nh - h);
+	mandel->offset_x -= ((t_fract)x / (t_fract)mandel->img->width) * (nw - w);
+	mandel->offset_y -= ((t_fract)y / (t_fract)mandel->img->height) * (nh - h);
 }
 
-void					mandelbrot(struct s_image *img, unsigned int iterations)
+struct s_mandel			mandelbrot_init(struct s_image *img,
+unsigned int iterations)
 {
-	struct s_mandel		mandel;
-
-	mandel = (struct s_mandel) {
+	return (struct s_mandel) {
 		.img = img,
 		.max_iterations = iterations,
 		.coef_x = (t_fract)img->width / (t_fract)(X2 - X1),
 		.coef_y = (t_fract)img->height / (t_fract)(Y2 - Y1),
-		.color_map = create_color_map(iterations),
+		.color_map = create_color_map(0x00bfff, 0x001015, COLOR_BLACK, iterations),
 		.zoom = (t_fract)1.0f,
 		.offset_x = (t_fract)0.0f,
 		.offset_y = (t_fract)0.0f,
@@ -124,6 +86,13 @@ void					mandelbrot(struct s_image *img, unsigned int iterations)
 		.y1 = (t_fract)Y1,
 		.y2 = (t_fract)Y2
 	};
+}
+
+void					mandelbrot(struct s_image *img, unsigned int iterations)
+{
+	struct s_mandel		mandel;
+
+	mandel = mandelbrot_init(img, iterations);
 	if (!mandel.color_map)
 		return ;
 	image_fill_threaded(img, draw_mandelpix, &mandel, 8);

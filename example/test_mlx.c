@@ -6,7 +6,7 @@
 /*   By: snicolet <marvin@42.fr>                    +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2020/03/31 13:36:43 by snicolet          #+#    #+#             */
-/*   Updated: 2020/05/21 02:33:50 by snicolet         ###   ########.fr       */
+/*   Updated: 2020/05/21 11:49:58 by snicolet         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -61,11 +61,9 @@ static int		key_press_hook(int keycode, void *userdata)
 		exit(EXIT_SUCCESS);
 	}
 	else if (keycode == KEY_P)
-		mlx->flags |= (DISPLAY_DOT | RENDER);
-	if ((keycode >= 'a') && (keycode <= 'z'))
-		mlx->keyboard |= (1u << (keycode - 'a'));\
+		mlx->flags |= FLUSH;
 	if (mlx->keyboard != old_kbd)
-		mlx->flags |= RENDER;
+		mlx->flags |= FLUSH;
 	return (EXIT_SUCCESS);
 }
 
@@ -77,13 +75,16 @@ static int		key_rlz_hook(int keycode, void *userdata)
 	mlx = userdata;
 	old_kbd = mlx->keyboard;
 	if (keycode == KEY_P) {
-		mlx->flags ^= DISPLAY_DOT;
-		mlx->flags |= RENDER;
+		mlx->flags |= FLUSH;
 	}
-	if ((keycode >= 'a') && (keycode <= 'z'))
-		mlx->keyboard &= ~(1u << (keycode - 'a'));
 	if (mlx->keyboard != old_kbd)
-		mlx->flags |= RENDER;
+		mlx->flags |= FLUSH;
+	return (EXIT_SUCCESS);
+}
+
+static int		mouse_click(int button, int x, int y, void *userdata)
+{
+	printf("button: %d at %dx%d userptr: %p\n", button, x, y, userdata);
 	return (EXIT_SUCCESS);
 }
 
@@ -104,12 +105,18 @@ static int		create_window(struct s_mlx *mlx, struct s_window *win)
 
 static int	display(struct s_mlx *mlx)
 {
-	if (mlx->flags & RENDER)
+	if (mlx->flags & COMPUTE)
+	{
+		mandelbrot(&mlx->window.image, 90);
+		mlx->flags &= ~COMPUTE;
+		mlx->flags |= FLUSH;
+	}
+	if (mlx->flags & FLUSH)
 	{
 		puts("pushing image to window.");
 		mlx_put_image_to_window(mlx->ptr, mlx->window.ptr,
 			mlx->window.image.ptr, 0, 0);
-		mlx->flags &= ~RENDER;
+		mlx->flags &= ~FLUSH;
 	}
 	usleep(60);
 	return (EXIT_SUCCESS);
@@ -127,7 +134,7 @@ int			main(int ac, char **av)
 	mlx.window.title = "Testing mlx window";
 	mlx.window.width = 1910;
 	mlx.window.height = 1000;
-	mlx.flags = RENDER;
+	mlx.flags = COMPUTE;
 	if (ac > 1)
 		sscanf(av[1], "%5ux%5u", &mlx.window.width, &mlx.window.height);
 	if ((!mlx.window.height) || (!mlx.window.width))
@@ -137,9 +144,9 @@ int			main(int ac, char **av)
 		return (EXIT_FAILURE);
 	}
 	mlx_string_put(mlx.ptr, mlx.window.ptr, 10, 10, COLOR_WHITE, "Please wait");
-	mandelbrot(&mlx.window.image, 90);
-	mlx_hook(mlx.window.ptr, HOOK_KEY_DOWN, 1, key_press_hook, &mlx);
-	mlx_hook(mlx.window.ptr, HOOK_KEY_UP, 2, key_rlz_hook, &mlx);
+	mlx_hook(mlx.window.ptr, HOOK_KEY_DOWN, 1, &key_press_hook, &mlx);
+	mlx_hook(mlx.window.ptr, HOOK_KEY_UP, 2, &key_rlz_hook, &mlx);
+	mlx_hook(mlx.window.ptr, HOOK_MOUSE_DOWN, 4, &mouse_click, &mlx);
 	mlx_loop_hook(mlx.ptr, &display, &mlx);
 	mlx_loop(mlx.ptr);
 	return (EXIT_SUCCESS);
