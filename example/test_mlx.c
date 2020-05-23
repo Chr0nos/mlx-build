@@ -121,7 +121,10 @@ static void	apply_move(size_t flags, struct s_mandel *mandel, t_fract speed)
 	unsigned int	iter_step;
 
 	if (flags & RESET)
+	{
+		free(mandel->color_map);
 		*mandel = mandelbrot_init(mandel->img, 90);
+	}
 	if (flags & MOVE_RIGHT)
 		mandel->offset_x += speed * mandel->zoom;
 	if (flags & MOVE_LEFT)
