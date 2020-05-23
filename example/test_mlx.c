@@ -17,8 +17,9 @@
 
 #include "mlx.h"
 #include "test_mlx.h"
-#include "mlx_terminate.h"
+#include "color_map.h"
 #include "mandelbrot.h"
+#include "mlx_terminate.h"
 
 __attribute_pure__
 static int		create_image(struct s_mlx *mlx,
@@ -47,44 +48,56 @@ static int		create_image(struct s_mlx *mlx,
 	return (EXIT_SUCCESS);
 }
 
+static size_t	get_key_related_flag(const int scancode)
+{
+	size_t		n;
+
+	n = sizeof(g_key_binds) / sizeof(struct s_binding);
+	while (n--)
+	{
+		if (g_key_binds[n].scancode == scancode)
+			return g_key_binds[n].flag;
+	}
+	printf("unknow key code %d\n", scancode);
+	return (0);
+}
+
 static int		key_press_hook(int keycode, void *userdata)
 {
 	struct s_mlx	*mlx;
-	unsigned int	old_kbd;
 
 	mlx = userdata;
-	old_kbd = mlx->keyboard;
 	if ((keycode == KEY_ESCAPE) || (keycode == KEY_Q)) {
+		free(((struct s_mandel*)mlx->userdata)->color_map);
 		mlx_destroy_image(mlx->ptr, mlx->window.image.ptr);
 		mlx_destroy_window(mlx->ptr, mlx->window.ptr);
 		mlx_terminate(mlx->ptr);
 		exit(EXIT_SUCCESS);
 	}
-	else if (keycode == KEY_P)
-		mlx->flags |= FLUSH;
-	if (mlx->keyboard != old_kbd)
-		mlx->flags |= FLUSH;
+	mlx->flags |= get_key_related_flag(keycode);
 	return (EXIT_SUCCESS);
 }
 
 static int		key_rlz_hook(int keycode, void *userdata)
 {
 	struct s_mlx	*mlx;
-	unsigned int	old_kbd;
 
 	mlx = userdata;
-	old_kbd = mlx->keyboard;
-	if (keycode == KEY_P) {
-		mlx->flags |= FLUSH;
-	}
-	if (mlx->keyboard != old_kbd)
-		mlx->flags |= FLUSH;
+	mlx->flags &= ~get_key_related_flag(keycode);
 	return (EXIT_SUCCESS);
 }
 
 static int		mouse_click(int button, int x, int y, void *userdata)
 {
+	struct s_mlx	*mlx;
+
+	mlx = userdata;
 	printf("button: %d at %dx%d userptr: %p\n", button, x, y, userdata);
+	if (button == MOUSE_CLICK_LEFT)
+	{
+		// zoom(mlx->userdata, (unsigned int)x, (unsigned int)y, (t_fract)1.002);
+		// mlx->flags |= COMPUTE;
+	}
 	return (EXIT_SUCCESS);
 }
 
@@ -103,28 +116,67 @@ static int		create_window(struct s_mlx *mlx, struct s_window *win)
 	return (EXIT_SUCCESS);
 }
 
+static void	apply_move(size_t flags, struct s_mandel *mandel, t_fract speed)
+{
+	unsigned int	iter_step;
+
+	if (flags & RESET)
+		*mandel = mandelbrot_init(mandel->img, 90);
+	if (flags & MOVE_RIGHT)
+		mandel->offset_x += speed * mandel->zoom;
+	if (flags & MOVE_LEFT)
+		mandel->offset_x -= speed * mandel->zoom;
+	if (flags & MOVE_UP)
+		mandel->offset_y -= speed * mandel->zoom;
+	if (flags & MOVE_DOWN)
+		mandel->offset_y += speed * mandel->zoom;
+	if (flags & ZOOM_IN)
+		mandel->zoom /= (t_fract)1.02;
+	if (flags & ZOOM_OUT)
+		mandel->zoom += (t_fract)1.02;
+
+	if (flags & (ITER_LESS | ITER_MORE))
+	{
+		iter_step = ITER_STEP;
+		free(mandel->color_map);
+		if (flags & ITER_MORE)
+			mandel->max_iterations += iter_step;
+		if ((flags & ITER_LESS) && (mandel->max_iterations > iter_step))
+			mandel->max_iterations -= iter_step;
+		mandel->color_map = create_color_map(0x00bfff, 0x001015, COLOR_BLACK,
+			mandel->max_iterations);
+	}
+}
+
 static int	display(struct s_mlx *mlx)
 {
+	if (mlx->flags & (MOVE_LEFT | MOVE_DOWN | MOVE_RIGHT | MOVE_UP | \
+		ZOOM_IN | ZOOM_OUT | RESET | ITER_LESS | ITER_MORE))
+	{
+		apply_move(mlx->flags, mlx->userdata, (t_fract)0.04);
+		mlx->flags |= COMPUTE | FLUSH;
+	}
 	if (mlx->flags & COMPUTE)
 	{
-		mandelbrot(&mlx->window.image, 90);
+		mandelbrot(mlx->userdata);
 		mlx->flags &= ~COMPUTE;
 		mlx->flags |= FLUSH;
 	}
 	if (mlx->flags & FLUSH)
 	{
-		puts("pushing image to window.");
 		mlx_put_image_to_window(mlx->ptr, mlx->window.ptr,
 			mlx->window.image.ptr, 0, 0);
 		mlx->flags &= ~FLUSH;
 	}
-	usleep(60);
+	else
+		usleep(60);
 	return (EXIT_SUCCESS);
 }
 
 int			main(int ac, char **av)
 {
 	struct s_mlx	mlx;
+	struct s_mandel	mandel;
 
 	bzero(&mlx, sizeof(mlx));
 	if (!(mlx.ptr = mlx_init())) {
@@ -143,6 +195,8 @@ int			main(int ac, char **av)
 		puts("failed to create window");
 		return (EXIT_FAILURE);
 	}
+	mandel = mandelbrot_init(&mlx.window.image, 90);
+	mlx.userdata = &mandel;
 	mlx_string_put(mlx.ptr, mlx.window.ptr, 10, 10, COLOR_WHITE, "Please wait");
 	mlx_hook(mlx.window.ptr, HOOK_KEY_DOWN, 1, &key_press_hook, &mlx);
 	mlx_hook(mlx.window.ptr, HOOK_KEY_UP, 2, &key_rlz_hook, &mlx);

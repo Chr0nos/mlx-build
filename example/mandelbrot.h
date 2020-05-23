@@ -14,7 +14,7 @@
 # define MANDELBROT_H
 # include "test_mlx.h"
 
-typedef float		t_fract;
+typedef double		t_fract;
 
 struct				s_mandel {
 	struct s_image	*img;
@@ -33,7 +33,7 @@ struct				s_mandel {
 
 struct s_mandel		mandelbrot_init(struct s_image *img,
 	unsigned int iterations);
-void				mandelbrot(struct s_image *img, unsigned int iterations);
+void				mandelbrot(struct s_mandel *mandel);
 void				zoom(struct s_mandel *mandel,
 	const unsigned int x, const unsigned int y, const t_fract zoom);
 

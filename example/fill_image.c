@@ -41,6 +41,8 @@ static void			*image_fill_routine(void *context)
 	slice_size = thread->img->width / thread->max_id;
 	min_x = slice_size * thread->id;
 	x = slice_size * (thread->id + 1);
+	if (thread->id + 1 == thread->max_id)
+		x = thread->img->width;
 	while (x-- > min_x)
 	{
 		y = thread->img->height;

@@ -70,7 +70,7 @@ void					zoom(struct s_mandel *mandel,
 }
 
 struct s_mandel			mandelbrot_init(struct s_image *img,
-unsigned int iterations)
+	unsigned int iterations)
 {
 	return (struct s_mandel) {
 		.img = img,
@@ -88,13 +88,9 @@ unsigned int iterations)
 	};
 }
 
-void					mandelbrot(struct s_image *img, unsigned int iterations)
+void					mandelbrot(struct s_mandel *mandel)
 {
-	struct s_mandel		mandel;
-
-	mandel = mandelbrot_init(img, iterations);
-	if (!mandel.color_map)
+	if (!mandel->color_map)
 		return ;
-	image_fill_threaded(img, draw_mandelpix, &mandel, 8);
-	free(mandel.color_map);
+	image_fill_threaded(mandel->img, draw_mandelpix, mandel, 12);
 }
