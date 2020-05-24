@@ -60,7 +60,7 @@ void					zoom(struct s_mandel *mandel,
 	const unsigned int x, const unsigned int y, const t_fract zoom)
 {
 	const t_fract	w = (mandel->x2 - mandel->x1) * mandel->zoom;
-	const t_fract	h = (mandel->y2 - mandel->y2) * mandel->zoom;
+	const t_fract	h = (mandel->y2 - mandel->y1) * mandel->zoom;
 	const t_fract	nw = (mandel->x2 - mandel->x1) * (mandel->zoom * zoom);
 	const t_fract	nh = (mandel->y2 - mandel->y1) * (mandel->zoom * zoom);
 

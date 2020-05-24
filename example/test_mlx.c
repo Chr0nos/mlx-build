@@ -93,10 +93,10 @@ static int		mouse_click(int button, int x, int y, void *userdata)
 
 	mlx = userdata;
 	printf("button: %d at %dx%d userptr: %p\n", button, x, y, userdata);
-	if (button == MOUSE_CLICK_LEFT)
+	if ((button == MOUSE_CLICK_LEFT) && (x >= 0) && (y >= 0))
 	{
-		// zoom(mlx->userdata, (unsigned int)x, (unsigned int)y, (t_fract)1.002);
-		// mlx->flags |= COMPUTE;
+		zoom(mlx->userdata, (unsigned int)x, (unsigned int)y, (t_fract)0.95);
+		mlx->flags |= COMPUTE;
 	}
 	return (EXIT_SUCCESS);
 }

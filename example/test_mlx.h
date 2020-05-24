@@ -53,7 +53,7 @@
 # define ITER_LESS			512u
 # define RESET				1024u
 
-# define ITER_STEP			10
+# define ITER_STEP			5
 
 # define COLOR_BLACK	    0x00000000
 # define COLOR_RED	        0x00ff0000
