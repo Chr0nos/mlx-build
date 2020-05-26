@@ -6,7 +6,7 @@
 /*   By: snicolet <marvin@42.fr>                    +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2020/03/31 13:37:33 by snicolet          #+#    #+#             */
-/*   Updated: 2020/05/21 03:34:05 by snicolet         ###   ########.fr       */
+/*   Updated: 2020/05/26 19:55:40 by snicolet         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -86,12 +86,22 @@ struct				s_image {
 	unsigned int	*pixels;
 };
 
+/*
+** Used for dual buffer rendering
+*/
+
+typedef struct		s_dual_buffers {
+	struct s_image	buffers[2];
+	unsigned int	current_index;
+}					t_buffpair;
+
 struct				s_window {
 	const char		*title;
 	void			*ptr;
 	unsigned int	width;
 	unsigned int	height;
-	struct s_image	image;
+	// struct s_image	image;
+	t_buffpair		images;
 };
 
 struct				s_mlx {
@@ -111,5 +121,6 @@ int					image_fill_threaded(
 void				image_fill(struct s_image *img,
 	void (*func)(unsigned int, unsigned int, void *),
 	void *userdata);
+void				*swap_buffer(struct s_dual_buffers *buffers);
 
 #endif

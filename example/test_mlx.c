@@ -6,7 +6,7 @@
 /*   By: snicolet <marvin@42.fr>                    +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2020/03/31 13:36:43 by snicolet          #+#    #+#             */
-/*   Updated: 2020/05/21 11:49:58 by snicolet         ###   ########.fr       */
+/*   Updated: 2020/05/26 20:13:31 by snicolet         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -69,7 +69,8 @@ static int		key_press_hook(int keycode, void *userdata)
 	mlx = userdata;
 	if ((keycode == KEY_ESCAPE) || (keycode == KEY_Q)) {
 		free(((struct s_mandel*)mlx->userdata)->color_map);
-		mlx_destroy_image(mlx->ptr, mlx->window.image.ptr);
+		mlx_destroy_image(mlx->ptr, mlx->window.images.buffers[0].ptr);
+		mlx_destroy_image(mlx->ptr, mlx->window.images.buffers[1].ptr);
 		mlx_destroy_window(mlx->ptr, mlx->window.ptr);
 		mlx_terminate(mlx->ptr);
 		exit(EXIT_SUCCESS);
@@ -108,7 +109,13 @@ static int		create_window(struct s_mlx *mlx, struct s_window *win)
 		(void*)(size_t)win->title);
 	if (!win->ptr)
 		return (EXIT_FAILURE);
-	if (create_image(mlx, win->width, win->height, &win->image)) {
+	win->images.current_index = 0;
+	if (create_image(mlx, win->width, win->height, &win->images.buffers[0])) {
+		mlx_destroy_window(mlx->ptr, win->ptr);
+		return (EXIT_FAILURE);
+	}
+	if (create_image(mlx, win->width, win->height, &win->images.buffers[1])) {
+		mlx_destroy_image(mlx->ptr, &win->images.buffers[0].ptr);
 		mlx_destroy_window(mlx->ptr, win->ptr);
 		return (EXIT_FAILURE);
 	}
@@ -153,6 +160,9 @@ static void	apply_move(size_t flags, struct s_mandel *mandel, t_fract speed)
 
 static int	display(struct s_mlx *mlx)
 {
+	struct s_image	*buffer;
+
+	buffer = NULL;
 	if (mlx->flags & (MOVE_LEFT | MOVE_DOWN | MOVE_RIGHT | MOVE_UP | \
 		ZOOM_IN | ZOOM_OUT | RESET | ITER_LESS | ITER_MORE))
 	{
@@ -161,19 +171,26 @@ static int	display(struct s_mlx *mlx)
 	}
 	if (mlx->flags & COMPUTE)
 	{
+		buffer = swap_buffer(&mlx->window.images);
+		((struct s_mandel *)mlx->userdata)->img = buffer;
 		mandelbrot(mlx->userdata);
 		mlx->flags &= ~COMPUTE;
 		mlx->flags |= FLUSH;
 	}
 	if (mlx->flags & FLUSH)
 	{
-		mlx_put_image_to_window(mlx->ptr, mlx->window.ptr,
-			mlx->window.image.ptr, 0, 0);
+		mlx_put_image_to_window(mlx->ptr, mlx->window.ptr, buffer->ptr, 0, 0);
 		mlx->flags &= ~FLUSH;
 	}
 	else
 		usleep(60);
 	return (EXIT_SUCCESS);
+}
+
+void		*swap_buffer(struct s_dual_buffers *buffers)
+{
+	buffers->current_index = buffers->current_index == 0;
+	return (&buffers->buffers[buffers->current_index]);
 }
 
 int			main(int ac, char **av)
@@ -198,7 +215,7 @@ int			main(int ac, char **av)
 		puts("failed to create window");
 		return (EXIT_FAILURE);
 	}
-	mandel = mandelbrot_init(&mlx.window.image, 90);
+	mandel = mandelbrot_init(&mlx.window.images.buffers[0], 90);
 	mlx.userdata = &mandel;
 	mlx_string_put(mlx.ptr, mlx.window.ptr, 10, 10, COLOR_WHITE, "Please wait");
 	mlx_hook(mlx.window.ptr, HOOK_KEY_DOWN, 1, &key_press_hook, &mlx);
