@@ -6,7 +6,7 @@
 /*   By: snicolet <marvin@42.fr>                    +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2020/03/31 13:37:33 by snicolet          #+#    #+#             */
-/*   Updated: 2020/05/26 19:55:40 by snicolet         ###   ########.fr       */
+/*   Updated: 2020/05/26 20:17:34 by snicolet         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -100,7 +100,6 @@ struct				s_window {
 	void			*ptr;
 	unsigned int	width;
 	unsigned int	height;
-	// struct s_image	image;
 	t_buffpair		images;
 };
 
