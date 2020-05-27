@@ -143,7 +143,7 @@ static void	apply_move(size_t flags, struct s_mandel *mandel, t_fract speed)
 	if (flags & ZOOM_IN)
 		mandel->zoom /= (t_fract)1.02;
 	if (flags & ZOOM_OUT)
-		mandel->zoom += (t_fract)1.02;
+		mandel->zoom *= (t_fract)1.02;
 
 	if (flags & (ITER_LESS | ITER_MORE))
 	{
