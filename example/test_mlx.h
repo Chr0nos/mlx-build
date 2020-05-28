@@ -38,8 +38,9 @@
 # define MOUSE_CLICK_LEFT	1
 # define MOUSE_CLICK_MIDDLE	2
 # define MOUSE_CLICK_RIGHT	3
+# define MOUSE_WHEEL_DOWN	4
 # define MOUSE_WHEEL_UP		5
-# define MOUSE_WHEEL_DOWN	6
+# define MOUSE_WHEEL_CLICK	6
 
 # define COMPUTE			1u
 # define FLUSH	            2u

@@ -91,12 +91,17 @@ static int		key_rlz_hook(int keycode, void *userdata)
 static int		mouse_click(int button, int x, int y, void *userdata)
 {
 	struct s_mlx	*mlx;
+	t_fract			direction;
 
+	if ((x < 0) || (y < 0))
+		return (EXIT_SUCCESS);
 	mlx = userdata;
 	printf("button: %d at %dx%d userptr: %p\n", button, x, y, userdata);
-	if ((button == MOUSE_CLICK_LEFT) && (x >= 0) && (y >= 0))
+	if ((button == MOUSE_CLICK_LEFT) || (button == MOUSE_WHEEL_DOWN) ||
+		(button == MOUSE_WHEEL_UP))
 	{
-		zoom(mlx->userdata, (unsigned int)x, (unsigned int)y, (t_fract)0.95);
+		direction = (t_fract)(button == MOUSE_WHEEL_UP ? 1.02 : 0.95);
+		zoom(mlx->userdata, (unsigned int)x, (unsigned int)y, direction);
 		mlx->flags |= COMPUTE;
 	}
 	return (EXIT_SUCCESS);
@@ -141,10 +146,9 @@ static void	apply_move(size_t flags, struct s_mandel *mandel, t_fract speed)
 	if (flags & MOVE_DOWN)
 		mandel->offset_y += speed * mandel->zoom;
 	if (flags & ZOOM_IN)
-		mandel->zoom /= (t_fract)1.02;
+		zoom(mandel, mandel->img->width >> 1, mandel->img->height >> 1, (t_fract)0.98);
 	if (flags & ZOOM_OUT)
-		mandel->zoom *= (t_fract)1.02;
-
+		zoom(mandel, mandel->img->width >> 1, mandel->img->height >> 1, (t_fract)1.02);
 	if (flags & (ITER_LESS | ITER_MORE))
 	{
 		iter_step = ITER_STEP;

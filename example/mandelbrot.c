@@ -38,10 +38,10 @@ static void				draw_mandelpix(const unsigned int x,
 	mandel = userdata;
 	z[RE] = 0.0;
 	z[IM] = 0.0;
-	z[CR] = ((t_fract)x / mandel->coef_x + mandel->x1) * \
-		mandel->zoom + mandel->offset_x;
-	z[CI] = ((t_fract)y / mandel->coef_y + mandel->y1) * \
-		mandel->zoom + mandel->offset_y;
+	z[CR] = ((t_fract)x / mandel->coef_x) * mandel->zoom + mandel->x1 + \
+		mandel->offset_x;
+	z[CI] = ((t_fract)y / mandel->coef_y) * mandel->zoom + mandel->y1 + \
+		mandel->offset_y;
 	i = 0;
 	while (i < mandel->max_iterations)
 	{
