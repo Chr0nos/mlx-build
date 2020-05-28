@@ -56,7 +56,7 @@ static size_t	get_key_related_flag(const int scancode)
 	while (n--)
 	{
 		if (g_key_binds[n].scancode == scancode)
-			return g_key_binds[n].flag;
+			return (g_key_binds[n].flag);
 	}
 	printf("unknow key code %d\n", scancode);
 	return (0);
@@ -96,7 +96,6 @@ static int		mouse_click(int button, int x, int y, void *userdata)
 	if ((x < 0) || (y < 0))
 		return (EXIT_SUCCESS);
 	mlx = userdata;
-	printf("button: %d at %dx%d userptr: %p\n", button, x, y, userdata);
 	if ((button == MOUSE_CLICK_LEFT) || (button == MOUSE_WHEEL_DOWN) ||
 		(button == MOUSE_WHEEL_UP))
 	{
@@ -104,6 +103,8 @@ static int		mouse_click(int button, int x, int y, void *userdata)
 		zoom(mlx->userdata, (unsigned int)x, (unsigned int)y, direction);
 		mlx->flags |= COMPUTE;
 	}
+	else
+		printf("button: %d at %dx%d userptr: %p\n", button, x, y, userdata);
 	return (EXIT_SUCCESS);
 }
 
@@ -166,7 +167,7 @@ static int	display(struct s_mlx *mlx)
 {
 	struct s_image	*buffer;
 
-	buffer = NULL;
+	buffer = ((struct s_mandel *)mlx->userdata)->img;
 	if (mlx->flags & (MOVE_LEFT | MOVE_DOWN | MOVE_RIGHT | MOVE_UP | \
 		ZOOM_IN | ZOOM_OUT | RESET | ITER_LESS | ITER_MORE))
 	{
